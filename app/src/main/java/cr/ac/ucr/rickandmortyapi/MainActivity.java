@@ -1,18 +1,20 @@
 package cr.ac.ucr.rickandmortyapi;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
 import java.util.ArrayList;
 
+import cr.ac.ucr.rickandmortyapi.adapters.MainViewPagerAdapter;
+import cr.ac.ucr.rickandmortyapi.fragments.CharacterFragment;
+
 public class MainActivity extends AppCompatActivity {
 
-    private vPager vPager;
+    private ViewPager vPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         vPager = findViewById(R.id.vp_pager);
-
         setUpViewPager();
     }
 
@@ -31,11 +32,13 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Fragment> fragments = new ArrayList<>();
 
         //TODO: add fragments
-        fragments.add();
+        fragments.add(CharacterFragment.newInstance());
 
-        MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter (getSupportFragmentManager(), fragments());
+        MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter (getSupportFragmentManager(), fragments);
 
+        vPager.setAdapter(mainViewPagerAdapter);
     }
+
 
 
 }
