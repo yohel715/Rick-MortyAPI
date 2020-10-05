@@ -1,6 +1,7 @@
 package cr.ac.ucr.rickandmortyapi.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -15,11 +17,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 
+import cr.ac.ucr.rickandmortyapi.CharacterActivity;
 import cr.ac.ucr.rickandmortyapi.R;
 
 import cr.ac.ucr.rickandmortyapi.models.Character;
 
-public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.ViewHolder> {
+public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.ViewHolder> implements ItemClickListener{
 
     private Context context;
     private ArrayList<Character> characters;
@@ -37,10 +40,8 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Vi
     @NonNull
     @Override
     public CharactersAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_character, parent, false);
-
-        return new ViewHolder(view);
+        return new ViewHolder(view, this);
     }
 
     @Override
@@ -70,8 +71,17 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Vi
         notifyDataSetChanged();
     }
 
+
+    public void onClick(View view, int position) {
+        Intent intent = new Intent(context, CharacterActivity.class);
+        Character character = characters.get(position);
+        intent.putExtra(context.getString(R.string.character_id), character.getId());
+        intent.putExtra(context.getString(R.string.character_name), character.getName());
+        context.startActivity(intent);
+    }
+
     //Esta clase se encagar de obtener los componentes/elmentos del layout
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private final ImageView ivCharacter;
         private final TextView tvName;
@@ -79,8 +89,16 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Vi
         private final TextView tvSpecie;
         private final TextView tvLocation;
 
-        public ViewHolder(@NonNull View view) {
+        private final CardView cvCharacterCard;
+
+        private ItemClickListener listener;
+
+        public ViewHolder(@NonNull View view, ItemClickListener listener) {
             super(view);
+
+            this.listener = listener;
+
+            cvCharacterCard = view.findViewById(R.id.cvCharacterCard);
 
             ivCharacter = itemView.findViewById(R.id.iv_character);
 
@@ -89,6 +107,17 @@ public class CharactersAdapter extends RecyclerView.Adapter<CharactersAdapter.Vi
             tvSpecie = view.findViewById(R.id.tv_species);
             tvLocation = view.findViewById(R.id.tv_location);
 
+            cvCharacterCard.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View view) {
+            listener.onClick(view , getLayoutPosition());
         }
     }
+}
+
+interface ItemClickListener{
+    void onClick(View vies, int position);
 }

@@ -5,7 +5,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+
 
 import java.util.ArrayList;
 
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager vPager;
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,20 +28,24 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         vPager = findViewById(R.id.vp_pager);
+
         setUpViewPager();
     }
 
     private void setUpViewPager() {
         ArrayList<Fragment> fragments = new ArrayList<>();
+        ArrayList<String> titles = new ArrayList<>();
+        titles.add("CHARACTERS");
+        titles.add("LOCATIONS");
+        titles.add("EPISODES");
 
-        //TODO: add fragments
+        fragments.add(CharacterFragment.newInstance());
+        fragments.add(CharacterFragment.newInstance());
         fragments.add(CharacterFragment.newInstance());
 
-        MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter (getSupportFragmentManager(), fragments);
+        MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter (getSupportFragmentManager(), fragments, titles);
 
         vPager.setAdapter(mainViewPagerAdapter);
     }
-
-
 
 }

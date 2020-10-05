@@ -62,7 +62,7 @@ public class RetrofitBuilder {
                 .build();
     }
 
-    public static <T> T CreateService(final Class<T> service){
+    public static <T> T createService(final Class<T> service){
         return retrofit.create(service);
     }
 
