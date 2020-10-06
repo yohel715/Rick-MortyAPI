@@ -90,7 +90,7 @@ public class CharacterFragment extends Fragment {
 
         charactersAdapter.addCharacters(characters);
 
-        setUpRVScrollListener(rvCharacters, linearLayoutManager);
+        setupRVScrollListener(rvCharacters, linearLayoutManager);
 
         return view;
     }
@@ -99,10 +99,10 @@ public class CharacterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //ToDo: se hace la lógica
-        getCharactersInfo(page);
+        getEpisodesInfo(page);
     }
 
-    private void getCharactersInfo(int page) {
+    private void getEpisodesInfo(int page) {
 
         canLoad = false;
 
@@ -137,35 +137,35 @@ public class CharacterFragment extends Fragment {
         });
     }
 
-    private void setUpRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager){
+    private void setupRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                //dy = + -> si hace escroll hacia abajo
-                //dy = - -> si hace escroll hacia arriba
-                if(dy > 0){
-
-                    //Total items
+                // dy = + -> personaje 0 a 20
+                // dy = - -> personaje 20 a 0
+                if (dy > 0) {
+                    // Total de items
                     int totalItems = linearLayoutManager.getItemCount();
-                    //Items que ya se mostraron
+
+                    // Items que ya se mostraron
                     int pastItems = linearLayoutManager.findFirstVisibleItemPosition();
-                    //Items que se están mostrando
+
+                    // items que se estan mostrando
                     int visibleItems = linearLayoutManager.getChildCount();
 
-                    Log.i(TAG, "totalItems" + totalItems);
-                    Log.i(TAG, "pastItems" + pastItems);
-                    Log.i(TAG, "visibleItems" + visibleItems);
-
                     if(canLoad){
-                        if((page+ visibleItems) >= totalItems){
+                        if((pastItems + visibleItems) >= totalItems ){
                             page++;
+
                             pb_loading.setVisibility(View.VISIBLE);
-                            getCharactersInfo(page);
+
+                            getEpisodesInfo(page);
                         }
                     }
                 }
+
             }
         });
     }
