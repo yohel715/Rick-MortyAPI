@@ -11,7 +11,7 @@ public class Character {
     private String type;
     private String gender;
     private Origin origin;
-    private Lotation location;
+    private Location location;
     private String image;
     private ArrayList<String> episode;
     private String url;
@@ -20,7 +20,7 @@ public class Character {
     public Character() {
     }
 
-    public Character(int id, String name, String status, String species, String type, String gender, Origin origin, Lotation location, String image, ArrayList<String> episode, String url, String created) {
+    public Character(int id, String name, String status, String species, String type, String gender, Origin origin, Location location, String image, ArrayList<String> episode, String url, String created) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -63,7 +63,7 @@ public class Character {
         return origin;
     }
 
-    public Lotation getLocation() {
+    public Location getLocation() {
         return location;
     }
 
@@ -111,7 +111,7 @@ public class Character {
         this.origin = origin;
     }
 
-    public void setLocation(Lotation location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 

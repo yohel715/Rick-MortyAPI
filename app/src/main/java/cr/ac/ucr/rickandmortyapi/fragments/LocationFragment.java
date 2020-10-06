@@ -1,7 +1,6 @@
 package cr.ac.ucr.rickandmortyapi.fragments;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,42 +15,43 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
 import cr.ac.ucr.rickandmortyapi.R;
-import cr.ac.ucr.rickandmortyapi.adapters.CharactersAdapter;
-import cr.ac.ucr.rickandmortyapi.api.CharacterService;
+
+import cr.ac.ucr.rickandmortyapi.adapters.LocationsAdapter;
+import cr.ac.ucr.rickandmortyapi.api.EpisodeService;
+import cr.ac.ucr.rickandmortyapi.api.LocationService;
 import cr.ac.ucr.rickandmortyapi.api.RetrofitBuilder;
-import cr.ac.ucr.rickandmortyapi.models.Character;
-import cr.ac.ucr.rickandmortyapi.models.CharacterResponse;
+
+import cr.ac.ucr.rickandmortyapi.models.Location;
+import cr.ac.ucr.rickandmortyapi.models.LocationResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
-public class CharacterFragment extends Fragment {
+
+public class LocationFragment extends Fragment {
 
     private AppCompatActivity activity;
-    private ArrayList<Character> characters;
-    private static final String TAG = "CharacterFragment";
-    private CharactersAdapter charactersAdapter;
+    private ArrayList<Location> locations;
+    private static final String TAG = "LocationFragment";
+    private LocationsAdapter locationsAdapter;
 
     boolean canLoad = true;
     int limit = 0;
     int page = 1;
     private ProgressBar pb_loading;
-    private RecyclerView rvCharacters;
+    private RecyclerView rvLocations;
 
-
-    public CharacterFragment() {
+    public LocationFragment() {
         // Required empty public constructor
     }
 
-    public static CharacterFragment newInstance() {
-        CharacterFragment fragment = new CharacterFragment();
+    public static LocationFragment newInstance() {
+        LocationFragment fragment = new LocationFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -61,36 +61,30 @@ public class CharacterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //ToDo: inicializar variables que no depende de la vista(layout)
-        characters = new ArrayList<>();
+        locations = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //ToDo: Inicializar viariables que no depende de la vista. Todos los componentes visuales (textView,Btn, EditsText)
-
-
-        View view = inflater.inflate(R.layout.fragment_character, container, false);
+        View view = inflater.inflate(R.layout.fragment_location, container, false);
 
         pb_loading = view.findViewById(R.id.pb_loading);
-        rvCharacters = view.findViewById(R.id.rv_characters);
+        rvLocations = view.findViewById(R.id.rv_characters);
 
-        //ArrayList --> Adapter <-- RecyclerView
-
-        charactersAdapter = new CharactersAdapter(activity);
-        rvCharacters.setAdapter(charactersAdapter);
-        rvCharacters.setHasFixedSize(true);
+        locationsAdapter = new LocationsAdapter(activity);
+        rvLocations.setAdapter(locationsAdapter);
+        rvLocations.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 3);
+        //GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 3);
 
-        rvCharacters.setLayoutManager(linearLayoutManager);
+        rvLocations.setLayoutManager(linearLayoutManager);
 
-        charactersAdapter.addCharacters(characters);
+        locationsAdapter.addLocations(locations);
 
-        setUpRVScrollListener(rvCharacters, linearLayoutManager);
+        setUpRVScrollListener(rvLocations, linearLayoutManager);
 
         return view;
     }
@@ -99,29 +93,29 @@ public class CharacterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //ToDo: se hace la lógica
-        getCharactersInfo(page);
+        getLocationsInfo(page);
     }
 
-    private void getCharactersInfo(int page) {
+    private void getLocationsInfo(int page) {
 
         canLoad = false;
 
-        CharacterService characterService = RetrofitBuilder.createService(CharacterService.class);
+        LocationService locationService = RetrofitBuilder.createService(LocationService.class);
 
-        Call<CharacterResponse> response = characterService.getCharacter(page);
+        Call<LocationResponse> response = locationService.getLocations(page);
 
-        response.enqueue(new Callback<CharacterResponse>() {
+        response.enqueue(new Callback<LocationResponse>() {
             @Override
-            public void onResponse(Call<CharacterResponse> call, @Nullable Response<CharacterResponse> response) {
+            public void onResponse( @NonNull Call<LocationResponse> call, @Nullable Response<LocationResponse> response) {
                 if (response.isSuccessful()){
 
-                    CharacterResponse characterResponse = response.body();
+                    LocationResponse locationResponse = response.body();
 
-                    ArrayList<Character> characters = characterResponse.getResults();
+                    ArrayList<Location> locations = locationResponse.getResults();
 
-                    charactersAdapter.addCharacters(characters);
+                    locationsAdapter.addLocations(locations);
 
-                    showCharacters(true);
+                    showLocations(true);
 
                 }else {
                     Log.e(TAG,"onError " + response.errorBody());
@@ -130,14 +124,15 @@ public class CharacterFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<CharacterResponse> call, @Nullable  Throwable t) {
+            public void onFailure(Call<LocationResponse> call, Throwable t) {
                 canLoad = true;
                 throw new RuntimeException(t);
             }
+
         });
     }
 
-    private void setUpRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager){
+    private void setUpRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -162,7 +157,7 @@ public class CharacterFragment extends Fragment {
                         if((page+ visibleItems) >= totalItems){
                             page++;
                             pb_loading.setVisibility(View.VISIBLE);
-                            getCharactersInfo(page);
+                            getLocationsInfo(page);
                         }
                     }
                 }
@@ -170,8 +165,8 @@ public class CharacterFragment extends Fragment {
         });
     }
 
-    private void showCharacters(boolean setVisible){
-        rvCharacters.setVisibility(setVisible ? View.VISIBLE :View.GONE);
+    private void showLocations(boolean setVisible){
+        rvLocations.setVisibility(setVisible ? View.VISIBLE :View.GONE);
         pb_loading.setVisibility(!setVisible ? View.GONE: View.GONE);
     }
 
@@ -187,4 +182,5 @@ public class CharacterFragment extends Fragment {
         activity = null;
 
     }
+
 }

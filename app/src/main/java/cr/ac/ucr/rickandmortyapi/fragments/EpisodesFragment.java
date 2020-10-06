@@ -1,7 +1,6 @@
 package cr.ac.ucr.rickandmortyapi.fragments;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,42 +15,40 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
 import cr.ac.ucr.rickandmortyapi.R;
-import cr.ac.ucr.rickandmortyapi.adapters.CharactersAdapter;
-import cr.ac.ucr.rickandmortyapi.api.CharacterService;
+import cr.ac.ucr.rickandmortyapi.adapters.EpisodesAdapter;
+import cr.ac.ucr.rickandmortyapi.api.EpisodeService;
 import cr.ac.ucr.rickandmortyapi.api.RetrofitBuilder;
-import cr.ac.ucr.rickandmortyapi.models.Character;
-import cr.ac.ucr.rickandmortyapi.models.CharacterResponse;
+import cr.ac.ucr.rickandmortyapi.models.Episode;
+import cr.ac.ucr.rickandmortyapi.models.EpisodeResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
-public class CharacterFragment extends Fragment {
+
+public class EpisodesFragment extends Fragment {
 
     private AppCompatActivity activity;
-    private ArrayList<Character> characters;
-    private static final String TAG = "CharacterFragment";
-    private CharactersAdapter charactersAdapter;
+    private ArrayList<Episode> episodes;
+    private static final String TAG = "EpisodesFragment";
+    private EpisodesAdapter episodesAdapter;
 
     boolean canLoad = true;
     int limit = 0;
     int page = 1;
     private ProgressBar pb_loading;
-    private RecyclerView rvCharacters;
+    private RecyclerView rvEpisodes;
 
-
-    public CharacterFragment() {
+    public EpisodesFragment() {
         // Required empty public constructor
     }
 
-    public static CharacterFragment newInstance() {
-        CharacterFragment fragment = new CharacterFragment();
+    public static EpisodesFragment newInstance() {
+        EpisodesFragment fragment = new EpisodesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -61,36 +58,30 @@ public class CharacterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //ToDo: inicializar variables que no depende de la vista(layout)
-        characters = new ArrayList<>();
+        episodes = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //ToDo: Inicializar viariables que no depende de la vista. Todos los componentes visuales (textView,Btn, EditsText)
-
-
-        View view = inflater.inflate(R.layout.fragment_character, container, false);
+        View view = inflater.inflate(R.layout.fragment_episodes, container, false);
 
         pb_loading = view.findViewById(R.id.pb_loading);
-        rvCharacters = view.findViewById(R.id.rv_characters);
+        rvEpisodes = view.findViewById(R.id.rv_episodes);
 
-        //ArrayList --> Adapter <-- RecyclerView
-
-        charactersAdapter = new CharactersAdapter(activity);
-        rvCharacters.setAdapter(charactersAdapter);
-        rvCharacters.setHasFixedSize(true);
+        episodesAdapter = new EpisodesAdapter(activity);
+        rvEpisodes.setAdapter(episodesAdapter);
+        rvEpisodes.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 3);
+        //GridLayoutManager gridLayoutManager = new GridLayoutManager(activity, 3);
 
-        rvCharacters.setLayoutManager(linearLayoutManager);
+        rvEpisodes.setLayoutManager(linearLayoutManager);
 
-        charactersAdapter.addCharacters(characters);
+        episodesAdapter.addEpisodes(episodes);
 
-        setUpRVScrollListener(rvCharacters, linearLayoutManager);
+        setUpRVScrollListener(rvEpisodes, linearLayoutManager);
 
         return view;
     }
@@ -99,29 +90,28 @@ public class CharacterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //ToDo: se hace la lógica
-        getCharactersInfo(page);
+        getEpisodesInfo(page);
     }
 
-    private void getCharactersInfo(int page) {
-
+    private void getEpisodesInfo(int page) {
         canLoad = false;
 
-        CharacterService characterService = RetrofitBuilder.createService(CharacterService.class);
+        EpisodeService episodeService = RetrofitBuilder.createService(EpisodeService.class);
 
-        Call<CharacterResponse> response = characterService.getCharacter(page);
+        Call<EpisodeResponse> response = episodeService.getEpisode(page);
 
-        response.enqueue(new Callback<CharacterResponse>() {
+        response.enqueue(new Callback<EpisodeResponse>() {
             @Override
-            public void onResponse(Call<CharacterResponse> call, @Nullable Response<CharacterResponse> response) {
+            public void onResponse( @NonNull Call<EpisodeResponse> call, @Nullable Response<EpisodeResponse> response) {
                 if (response.isSuccessful()){
 
-                    CharacterResponse characterResponse = response.body();
+                    EpisodeResponse episodeResponse = response.body();
 
-                    ArrayList<Character> characters = characterResponse.getResults();
+                    ArrayList<Episode> episodes = episodeResponse.getResults();
+                    Log.e(TAG,"episodes: " + response);
+                    episodesAdapter.addEpisodes(episodes);
 
-                    charactersAdapter.addCharacters(characters);
-
-                    showCharacters(true);
+                    showEpisodes(true);
 
                 }else {
                     Log.e(TAG,"onError " + response.errorBody());
@@ -130,14 +120,15 @@ public class CharacterFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<CharacterResponse> call, @Nullable  Throwable t) {
+            public void onFailure(Call<EpisodeResponse> call, Throwable t) {
                 canLoad = true;
                 throw new RuntimeException(t);
             }
+
         });
     }
 
-    private void setUpRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager){
+    private void setUpRVScrollListener(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager) {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -162,7 +153,7 @@ public class CharacterFragment extends Fragment {
                         if((page+ visibleItems) >= totalItems){
                             page++;
                             pb_loading.setVisibility(View.VISIBLE);
-                            getCharactersInfo(page);
+                            getEpisodesInfo(page);
                         }
                     }
                 }
@@ -170,9 +161,9 @@ public class CharacterFragment extends Fragment {
         });
     }
 
-    private void showCharacters(boolean setVisible){
-        rvCharacters.setVisibility(setVisible ? View.VISIBLE :View.GONE);
-        pb_loading.setVisibility(!setVisible ? View.GONE: View.GONE);
+    private void showEpisodes(boolean setVisible){
+        rvEpisodes.setVisibility(setVisible ? View.VISIBLE :View.GONE);
+        pb_loading.setVisibility(!setVisible ? View.VISIBLE: View.GONE);
     }
 
     @Override
@@ -187,4 +178,5 @@ public class CharacterFragment extends Fragment {
         activity = null;
 
     }
+
 }

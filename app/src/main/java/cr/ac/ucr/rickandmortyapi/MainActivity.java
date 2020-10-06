@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import cr.ac.ucr.rickandmortyapi.adapters.MainViewPagerAdapter;
 import cr.ac.ucr.rickandmortyapi.fragments.CharacterFragment;
+import cr.ac.ucr.rickandmortyapi.fragments.EpisodesFragment;
+import cr.ac.ucr.rickandmortyapi.fragments.LocationFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
         titles.add("EPISODES");
 
         fragments.add(CharacterFragment.newInstance());
-        fragments.add(CharacterFragment.newInstance());
-        fragments.add(CharacterFragment.newInstance());
+
+        fragments.add(LocationFragment.newInstance());
+
+        fragments.add(EpisodesFragment.newInstance());
 
         MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter (getSupportFragmentManager(), fragments, titles);
 
