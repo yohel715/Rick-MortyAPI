@@ -5,7 +5,7 @@ This is an example Android Application README to show briefly the sections your 
 ## Installation
 Clone this repository and import into **Android Studio**
 ```bash
-git clone git@github.com:wolox/<reponame>.git
+git clone yohel715@github.com/Rick-MortyAPI.git
 ```
 
 ## Configuration
@@ -33,7 +33,7 @@ From Android Studio:
 
 ## Maintainers
 This project is mantained by:
-* [Federico Ramundo](http://github.com/framundo)
+* [Yohel Ureña Mora](http://github.com/yohel715)
 
 
 ## Contributing
