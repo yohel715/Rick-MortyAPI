@@ -5,7 +5,7 @@ This is an example Android Application README to show briefly the sections your 
 ## Installation
 Clone this repository and import into **Android Studio**
 ```bash
-git clone yohel715@github.com/Rick-MortyAPI.git
+git clone github.com/yohel715/Rick-MortyAPI
 ```
 
 ## Configuration
